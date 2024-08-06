@@ -1,5 +1,7 @@
 import java.io.*;
 import java.lang.*;
+
+//Enum for the token
 enum TOKEN{
 	ILLEGAL_TOKEN(-1),
 	TOK_PLUS(1),
@@ -22,6 +24,7 @@ enum TOKEN{
 	}
 }
 
+//Lexical analyzer for tokenizing the input
 class Lexer{
 	String IExpr;
 	int index, length;
@@ -36,6 +39,7 @@ class Lexer{
 	public TOKEN getToken(){
 		TOKEN t = TOKEN.ILLEGAL_TOKEN;
 		
+		//Skipping the whitspace
 		while(index < length && (IExpr.charAt(index) == ' ' || IExpr.charAt(index) == '\t'))
 			index++;
 			
@@ -94,10 +98,12 @@ class Lexer{
 
 }
 
+//Symbolic placeholder to satisfy the compiler
 class RUNTIME_CONTEXT{
 
 }
 
+//Enum for the operators
 enum OPERATOR{
 	PLUS,
 	MINUS,
@@ -105,10 +111,12 @@ enum OPERATOR{
 	DIV
 }
 
+//An abstract class for our expression and an abstract method to evaluate --> Expression : 2 + 3, 5 - 2 + 6, ...
 abstract class Exp{
 	public abstract double Evaluate(RUNTIME_CONTEXT cont);
 }
 
+//Class for holding the value in an expression --> if 2 + 3 is an expression 2 & 3 are numeric constants
 class NumericConstant extends Exp{
 	private double value;
 	
@@ -122,6 +130,7 @@ class NumericConstant extends Exp{
 	}
 }
 
+//Class for binary expression evaluation --> 6 * 8 = 48 , 7 + 3 = 10, 22 - 14 = 8, 4 / 2 = 2
 class BinaryExp extends Exp{
 	private Exp ex1, ex2;
 	private OPERATOR op;
@@ -149,6 +158,7 @@ class BinaryExp extends Exp{
 	}
 }
 	
+//Class for unary expression evaluation --> +6 = 6, -6 = -6	
 class UnaryExp extends Exp{
 	private Exp ex1;
 	private OPERATOR op;
@@ -171,6 +181,7 @@ class UnaryExp extends Exp{
 	}
 }
 
+//Recursive Descent Parser(RDP) for generating Abstract Syntax Tree(AST)
 class RDParser extends Lexer{
 	TOKEN current_token;
 	
@@ -183,6 +194,7 @@ class RDParser extends Lexer{
 		return Expr();
 	}
 	
+	// <Expr> := <Term> | <Term> { + | - } <Expr>
 	public Exp Expr(){
 		TOKEN l_token;
 		Exp retValue = Term();
@@ -196,6 +208,7 @@ class RDParser extends Lexer{
 		return retValue;
 	}
 
+	// <Term> := <Factor> | <Factor> { * | / } <Term>
 	public Exp Term(){
 		TOKEN l_token;
 		Exp retValue = Factor();
@@ -209,6 +222,7 @@ class RDParser extends Lexer{
 		return retValue;
 	}
 
+	// <Factor> := <Number> | '(' <Term> ')' | { + | - } <Factor>
 	public Exp Factor(){
 		TOKEN l_token;
 		Exp retValue = null;
@@ -236,6 +250,7 @@ class RDParser extends Lexer{
 	}
 }
 
+//Responsible for building AST
 class AbstractBuilder{}
 class ExpressionBuilder extends AbstractBuilder{
 	String expression;
@@ -254,6 +269,7 @@ class ExpressionBuilder extends AbstractBuilder{
 	}
 }
 
+//Main class & method
 public class Program {
 	public static void main(String args[]){
 		ExpressionBuilder b = new ExpressionBuilder(args[0]);
